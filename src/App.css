@@ -1,0 +1,21 @@
+.list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+ul {
+  list-style-type: none;
+  padding: 20px 20px;
+}
+.header {
+  padding: 20px;
+  margin: 10px 0px;
+  border: 1px solid #f66e5f;
+  border-radius: 5px;
+  color: #f66e5f;
+  font-weight: bold;
+}
+li {
+  padding: 4px;
+}
