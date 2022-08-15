@@ -1,56 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import "../App.css";
-import { bxData } from "../data";
+import { ListItem } from "./Components/ListItem";
 
-export function List() {
-  const [checkedState, setCheckedState] = useState(
-    new Array(bxData.length).fill(false)
-  );
+const List = ({ bxData, renderHeader, render, extractKey, selectedKeys }) => {
+  const [checkedState, setCheckedState] = useState(selectedKeys);
 
-  useEffect(() => {
-    setCheckedState(JSON.parse(window.sessionStorage.getItem("checkedState")));
+  const handleCheck = useCallback((changedKey, checked) => {
+    setCheckedState((prevState) => {
+      if (checked && prevState.includes(changedKey)) {
+        return [...prevState, changedKey];
+      }
+      return prevState.filter((id) => id !== changedKey);
+    });
   }, []);
 
-  useEffect(() => {
-    window.sessionStorage.setItem("checkedState", JSON.stringify(checkedState));
-  }, [checkedState]);
-
-  const handleCheck = (position) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
-    setCheckedState(updatedCheckedState);
-  };
-
-  const indexesOfChecked = checkedState
-    .map((item, index) => (item ? index : undefined))
-    .filter((item) => item >= 0);
+  // const indexesOfChecked = checkedState.map((item, index) =>
+  //   item ? index : undefined
+  // ).fil;
 
   return (
     <div className="list-container">
-      {bxData.length ? (
-        <ul>
-          <div className="header">Selected: {indexesOfChecked.join(", ")} </div>
-          {bxData.map((employee, index) => {
-            return (
-              <li className="employee" key={employee.id}>
-                <input
-                  type="checkbox"
-                  onChange={() => handleCheck(index)}
-                  checked={checkedState[index]}
-                />
-                {employee.name +
-                  ", " +
-                  employee.address +
-                  ", " +
-                  employee.company}
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p>List is empty</p>
-      )}
+      {renderHeader(checkedState)}
+      {bxData.map((item) => {
+        const key = extractKey(item);
+        return (
+          <ListItem
+            item={item}
+            id={key}
+            key={key}
+            renderItem={render}
+            handleChange={handleCheck}
+          />
+        );
+      })}
     </div>
   );
-}
+};
+
+export default List;
